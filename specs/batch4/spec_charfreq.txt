@@ -1,0 +1,12 @@
+Write a complete Rust 2021 source file implementing char_frequency — return a HashMap<char, u64> of character counts in a &str.
+Required: no struct; just one pub fn.
+
+pub fn char_frequency(input: &str) -> std::collections::HashMap<char, u64> — for each char in input.chars() increment its count in the map; return the map.
+
+#[cfg(test)] mod tests:
+(1) fn simple: let f = char_frequency("hello"); assert_eq!(f.get(&'h'), Some(&1)); assert_eq!(f.get(&'e'), Some(&1)); assert_eq!(f.get(&'l'), Some(&2)); assert_eq!(f.get(&'o'), Some(&1)).
+(2) fn empty: let f = char_frequency(""); assert!(f.is_empty()).
+(3) fn unicode: let f = char_frequency("aaä"); assert_eq!(f.get(&'a'), Some(&2)); assert_eq!(f.get(&'ä'), Some(&1)).
+(4) fn whitespace_counted: let f = char_frequency("a b c"); assert_eq!(f.get(&' '), Some(&2)).
+
+Std only. Output ONLY the Rust source code. No markdown fences, no prose.

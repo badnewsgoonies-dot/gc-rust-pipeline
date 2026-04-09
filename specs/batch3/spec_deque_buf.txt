@@ -1,0 +1,16 @@
+Write a complete Rust 2021 source file implementing CircularBuf<T: Clone> with fixed capacity that overwrites oldest on push when full.
+Required: #[derive(Debug, Clone)] on struct.
+pub struct CircularBuf<T: Clone> { data: Vec<Option<T>>, head: usize, len: usize, capacity: usize }
+
+impl<T: Clone> CircularBuf<T>, numbered:
+(1) pub fn new(capacity: usize) -> Self — panic if capacity == 0; data is vec![None; capacity], head=0, len=0.
+(2) pub fn push(&mut self, value: T) — write Some(value) at index (head + len) % capacity; if len < capacity then len += 1; else head = (head + 1) % capacity (drop oldest, head moves forward).
+(3) pub fn iter(&self) -> Vec<T> — return cloned values in oldest-to-newest order: collect from index head, head+1, ..., head+len-1 modulo capacity.
+(4) pub fn len(&self) -> usize.
+(5) pub fn capacity(&self) -> usize.
+
+#[cfg(test)] mod tests using CircularBuf<i64>:
+(1) fn fill_no_overflow: let mut cb = CircularBuf::<i64>::new(3); cb.push(1); cb.push(2); cb.push(3); assert_eq!(cb.iter(), vec![1, 2, 3]); assert_eq!(cb.len(), 3).
+(2) fn overwrite_oldest: let mut cb = CircularBuf::<i64>::new(3); cb.push(1); cb.push(2); cb.push(3); cb.push(4); cb.push(5); assert_eq!(cb.iter(), vec![3, 4, 5]); assert_eq!(cb.len(), 3).
+
+Std only. Output ONLY the Rust source code. No markdown fences, no prose.

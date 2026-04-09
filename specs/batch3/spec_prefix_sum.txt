@@ -1,0 +1,16 @@
+Write a complete Rust 2021 source file implementing PrefixSum for i64 sequences.
+Required: #[derive(Debug, Clone)] on struct.
+pub struct PrefixSum { sums: Vec<i64> }
+
+impl PrefixSum, numbered:
+(1) pub fn new(values: &[i64]) -> Self — sums is a Vec<i64> of length values.len() + 1; sums[0] = 0; for i in 0..values.len() sums[i+1] = sums[i] + values[i].
+(2) pub fn range_sum(&self, lo: usize, hi: usize) -> i64 — return self.sums[hi] - self.sums[lo]. lo must be <= hi <= values.len(); panic with "range_sum: out of bounds" if hi >= self.sums.len() or lo > hi.
+(3) pub fn total(&self) -> i64 returning *self.sums.last().unwrap_or(&0).
+(4) pub fn len(&self) -> usize returning self.sums.len() - 1.
+
+#[cfg(test)] mod tests:
+(1) fn range_sums_match: let p = PrefixSum::new(&[1, 2, 3, 4, 5]); assert_eq!(p.range_sum(0, 5), 15); assert_eq!(p.range_sum(1, 4), 9); assert_eq!(p.range_sum(2, 3), 3); assert_eq!(p.range_sum(0, 0), 0).
+(2) fn total_matches_full_range: let p = PrefixSum::new(&[10, 20, 30]); assert_eq!(p.total(), 60); assert_eq!(p.len(), 3).
+(3) fn empty_input: let p = PrefixSum::new(&[]); assert_eq!(p.total(), 0); assert_eq!(p.len(), 0).
+
+Std only. Output ONLY the Rust source code. No markdown fences, no prose.

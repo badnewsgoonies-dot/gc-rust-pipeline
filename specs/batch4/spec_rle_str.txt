@@ -1,0 +1,13 @@
+Write a complete Rust 2021 source file implementing run_length_encode_str — RLE encode a string into "char + count" pairs as a String.
+Required: no struct; just one pub fn.
+
+pub fn run_length_encode_str(input: &str) -> String — if input is empty return String::new(); iterate chars, group consecutive equal, output each group as the char followed by its count as decimal digits. Example: "aaabbc" -> "a3b2c1".
+
+#[cfg(test)] mod tests:
+(1) fn simple: assert_eq!(run_length_encode_str("aaabbc"), "a3b2c1").
+(2) fn single: assert_eq!(run_length_encode_str("x"), "x1").
+(3) fn empty: assert_eq!(run_length_encode_str(""), "").
+(4) fn long_run: assert_eq!(run_length_encode_str("aaaaaaaaaa"), "a10").
+(5) fn alternating: assert_eq!(run_length_encode_str("ababab"), "a1b1a1b1a1b1").
+
+Std only. Output ONLY the Rust source code. No markdown fences, no prose.

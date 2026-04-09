@@ -1,0 +1,6 @@
+target/
+Cargo.lock
+__pycache__/
+*.pyc
+.env
+.env_tokens

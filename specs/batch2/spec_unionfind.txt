@@ -1,0 +1,18 @@
+Write a complete Rust 2021 source file implementing UnionFind with path compression.
+Required: #[derive(Debug, Clone)] on struct.
+pub struct UnionFind { parent: Vec<usize>, rank: Vec<u32>, num_sets: usize }
+
+impl UnionFind, numbered:
+(1) pub fn new(n: usize) -> Self — parent is (0..n).collect::<Vec<usize>>(); rank is vec![0u32; n]; num_sets = n.
+(2) pub fn find(&mut self, x: usize) -> usize — recursive path compression: if self.parent[x] != x, self.parent[x] = self.find(self.parent[x]); return self.parent[x].
+(3) pub fn union(&mut self, a: usize, b: usize) -> bool — let ra = self.find(a); let rb = self.find(b); if ra == rb return false; union by rank: if rank[ra] < rank[rb] parent[ra] = rb; else if rank[ra] > rank[rb] parent[rb] = ra; else { parent[rb] = ra; rank[ra] += 1 }; num_sets -= 1; return true.
+(4) pub fn connected(&mut self, a: usize, b: usize) -> bool returning self.find(a) == self.find(b).
+(5) pub fn num_sets(&self) -> usize returning self.num_sets.
+(6) pub fn size(&self) -> usize returning self.parent.len().
+
+#[cfg(test)] mod tests:
+(1) fn init_all_disjoint: let mut uf = UnionFind::new(5); assert_eq!(uf.num_sets(), 5); for i in 0..5 { assert_eq!(uf.find(i), i); }
+(2) fn union_merges: let mut uf = UnionFind::new(5); assert!(uf.union(0, 1)); assert!(uf.connected(0, 1)); assert_eq!(uf.num_sets(), 4); assert!(!uf.union(0, 1)).
+(3) fn transitive: let mut uf = UnionFind::new(5); uf.union(0, 1); uf.union(1, 2); assert!(uf.connected(0, 2)); assert_eq!(uf.num_sets(), 3).
+
+Std only. Output ONLY the Rust source code. No markdown fences, no prose.

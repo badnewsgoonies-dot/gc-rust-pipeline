@@ -1,0 +1,12 @@
+Write a complete Rust 2021 source file implementing bit_reverse_u32 — reverse the bits of a u32 value.
+Required: no struct; just one pub fn.
+
+pub fn bit_reverse_u32(input: u32) -> u32 — return the bit-reversed value. Use the standard u32::reverse_bits() method directly.
+
+#[cfg(test)] mod tests:
+(1) fn zero_unchanged: assert_eq!(bit_reverse_u32(0), 0).
+(2) fn all_ones_unchanged: assert_eq!(bit_reverse_u32(u32::MAX), u32::MAX).
+(3) fn one_bit_low_to_high: assert_eq!(bit_reverse_u32(1), 1u32 << 31).
+(4) fn double_reverse_identity: for v in [0u32, 1, 42, 1000, 0xCAFEBABE, u32::MAX] { assert_eq!(bit_reverse_u32(bit_reverse_u32(v)), v); }
+
+Std only. Output ONLY the Rust source code. No markdown fences, no prose.

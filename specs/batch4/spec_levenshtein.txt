@@ -1,0 +1,13 @@
+Write a complete Rust 2021 source file implementing levenshtein_distance — compute the edit distance between two &str values.
+Required: no struct; just one pub fn.
+
+pub fn levenshtein_distance(a: &str, b: &str) -> usize — let a_chars: Vec<char> = a.chars().collect(); let b_chars: Vec<char> = b.chars().collect(); let m = a_chars.len(); let n = b_chars.len(); if m == 0 return n; if n == 0 return m; let mut dp = vec![vec![0usize; n + 1]; m + 1]; for i in 0..=m { dp[i][0] = i; } for j in 0..=n { dp[0][j] = j; } for i in 1..=m { for j in 1..=n { let cost = if a_chars[i-1] == b_chars[j-1] { 0 } else { 1 }; dp[i][j] = (dp[i-1][j] + 1).min(dp[i][j-1] + 1).min(dp[i-1][j-1] + cost); } } dp[m][n].
+
+#[cfg(test)] mod tests:
+(1) fn identical: assert_eq!(levenshtein_distance("kitten", "kitten"), 0).
+(2) fn classic: assert_eq!(levenshtein_distance("kitten", "sitting"), 3).
+(3) fn empty_a: assert_eq!(levenshtein_distance("", "abc"), 3).
+(4) fn empty_b: assert_eq!(levenshtein_distance("xyz", ""), 3).
+(5) fn both_empty: assert_eq!(levenshtein_distance("", ""), 0).
+
+Std only. Output ONLY the Rust source code. No markdown fences, no prose.

@@ -1,0 +1,18 @@
+Write a complete Rust 2021 source file implementing Interval for i64 ranges.
+Required: #[derive(Debug, Clone, Copy, PartialEq, Eq)] on struct.
+pub struct Interval { pub start: i64, pub end: i64 }
+
+impl Interval, numbered:
+(1) pub fn new(start: i64, end: i64) -> Self — panic with message "interval start must be <= end" if start > end; else return Interval { start, end }.
+(2) pub fn len(&self) -> i64 returning self.end - self.start.
+(3) pub fn contains(&self, point: i64) -> bool returning point >= self.start && point < self.end.
+(4) pub fn overlaps(&self, other: &Interval) -> bool returning self.start < other.end && other.start < self.end.
+(5) pub fn intersection(&self, other: &Interval) -> Option<Interval> — if overlaps then Some(Interval { start: self.start.max(other.start), end: self.end.min(other.end) }); else None.
+
+#[cfg(test)] mod tests:
+(1) fn contains_endpoints: let i = Interval::new(0, 10); assert!(i.contains(0)); assert!(i.contains(9)); assert!(!i.contains(10)); assert!(!i.contains(-1)).
+(2) fn overlaps_cases: let a = Interval::new(0, 5); let b = Interval::new(3, 8); let c = Interval::new(10, 20); assert!(a.overlaps(&b)); assert!(b.overlaps(&a)); assert!(!a.overlaps(&c)).
+(3) fn intersection_nonempty: let a = Interval::new(0, 10); let b = Interval::new(5, 15); assert_eq!(a.intersection(&b), Some(Interval::new(5, 10))).
+(4) fn intersection_empty: let a = Interval::new(0, 5); let b = Interval::new(10, 20); assert_eq!(a.intersection(&b), None).
+
+Interval must derive Debug, Clone, Copy, PartialEq, Eq so assert_eq! and Option comparisons work. Std only. Output ONLY the Rust source code. No markdown fences, no prose.

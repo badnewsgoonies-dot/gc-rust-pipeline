@@ -1,0 +1,15 @@
+Write a complete Rust 2021 source file implementing kmp_find_all — find all starting indices of pattern in text using KMP.
+Required: no struct; just one pub fn (and a private helper).
+
+pub fn kmp_find_all(text: &str, pattern: &str) -> Vec<usize> — if pattern is empty return Vec::new(); compute the longest-proper-prefix-suffix table for pattern; scan text with two pointers; collect all match starting indices.
+
+fn build_lps(pattern: &[u8]) -> Vec<usize> — standard LPS array computation.
+
+#[cfg(test)] mod tests:
+(1) fn find_multiple: assert_eq!(kmp_find_all("abcabcabcabc", "abc"), vec![0, 3, 6, 9]).
+(2) fn find_single: assert_eq!(kmp_find_all("hello world", "world"), vec![6]).
+(3) fn no_match: assert_eq!(kmp_find_all("abcdef", "xyz"), Vec::<usize>::new()).
+(4) fn empty_pattern: assert_eq!(kmp_find_all("anything", ""), Vec::<usize>::new()).
+(5) fn overlapping: assert_eq!(kmp_find_all("aaaaa", "aa"), vec![0, 1, 2, 3]).
+
+Std only. Output ONLY the Rust source code. No markdown fences, no prose.

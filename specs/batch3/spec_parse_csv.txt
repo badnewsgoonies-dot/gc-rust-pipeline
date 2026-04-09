@@ -1,0 +1,12 @@
+Write a complete Rust 2021 source file implementing parse_csv_simple — split CSV text into rows, each row split on commas, no quoting handled.
+Required: no struct; just one pub fn.
+
+pub fn parse_csv_simple(input: &str) -> Vec<Vec<String>> — split input by '\n' into lines; for each non-empty line split by ',' and collect each field as String (trim whitespace from each field). Return Vec<Vec<String>> with one inner vec per non-empty line.
+
+#[cfg(test)] mod tests:
+(1) fn simple_csv: let r = parse_csv_simple("a,b,c\n1,2,3\n"); assert_eq!(r, vec![vec!["a".to_string(), "b".to_string(), "c".to_string()], vec!["1".to_string(), "2".to_string(), "3".to_string()]]).
+(2) fn empty_lines_skipped: let r = parse_csv_simple("a,b\n\nc,d\n"); assert_eq!(r.len(), 2); assert_eq!(r[1], vec!["c".to_string(), "d".to_string()]).
+(3) fn whitespace_trimmed: let r = parse_csv_simple("  x , y  ,  z  "); assert_eq!(r, vec![vec!["x".to_string(), "y".to_string(), "z".to_string()]]).
+(4) fn empty_input: let r = parse_csv_simple(""); assert!(r.is_empty()).
+
+Std only. Output ONLY the Rust source code. No markdown fences, no prose.

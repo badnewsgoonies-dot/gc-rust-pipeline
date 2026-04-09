@@ -1,0 +1,15 @@
+Write a complete Rust 2021 source file implementing RLE (run-length encoding) for Vec<u8>.
+Required: no struct needed; just two pub fns.
+
+pub fn encode(input: &[u8]) -> Vec<(u8, u32)> — iterate input, group consecutive equal bytes, produce pairs of (byte, count). Empty input → empty Vec. Max run length is u32::MAX but tests won't exceed small counts.
+
+pub fn decode(pairs: &[(u8, u32)]) -> Vec<u8> — expand each pair into `count` repetitions of `byte`. Empty input → empty Vec.
+
+#[cfg(test)] mod tests:
+(1) fn encode_simple: assert_eq!(encode(&[1,1,1,2,2,3]), vec![(1,3),(2,2),(3,1)]).
+(2) fn encode_empty: assert_eq!(encode(&[]), Vec::<(u8, u32)>::new()).
+(3) fn encode_single: assert_eq!(encode(&[42]), vec![(42, 1)]).
+(4) fn decode_simple: assert_eq!(decode(&[(1,3),(2,2),(3,1)]), vec![1,1,1,2,2,3]).
+(5) fn round_trip: let input = vec![5,5,5,5,10,10,20,20,20]; assert_eq!(decode(&encode(&input)), input).
+
+Std only. Output ONLY the Rust source code. No markdown fences, no prose.

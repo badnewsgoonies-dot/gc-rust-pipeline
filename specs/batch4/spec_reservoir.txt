@@ -1,0 +1,17 @@
+Write a complete Rust 2021 source file implementing ReservoirSampler<T: Clone> — keeps a uniform random sample of size k from a stream.
+Required: #[derive(Debug, Clone)] on struct.
+pub struct ReservoirSampler<T: Clone> { reservoir: Vec<T>, k: usize, seen: u64, rng_state: u64 }
+
+impl<T: Clone> ReservoirSampler<T>, numbered:
+(1) pub fn new(k: usize, seed: u64) -> Self — reservoir is empty Vec, k stored, seen=0, rng_state=seed.
+(2) fn next_random(&mut self) -> u64 — LCG: self.rng_state = self.rng_state.wrapping_mul(6364136223846793005).wrapping_add(1442695040888963407); return self.rng_state.
+(3) pub fn add(&mut self, item: T) — self.seen += 1; if self.reservoir.len() < self.k { self.reservoir.push(item); } else { let r = (self.next_random() % self.seen) as usize; if r < self.k { self.reservoir[r] = item; } }
+(4) pub fn sample(&self) -> &[T] returning &self.reservoir.
+(5) pub fn seen(&self) -> u64 returning self.seen.
+
+#[cfg(test)] mod tests using ReservoirSampler<i64>:
+(1) fn fewer_than_k_kept: let mut rs = ReservoirSampler::<i64>::new(5, 42); for v in [1, 2, 3] { rs.add(v); } assert_eq!(rs.sample().len(), 3); assert_eq!(rs.seen(), 3).
+(2) fn at_least_k_size_k: let mut rs = ReservoirSampler::<i64>::new(3, 42); for v in 1..=100 { rs.add(v); } assert_eq!(rs.sample().len(), 3); assert_eq!(rs.seen(), 100).
+(3) fn deterministic_with_seed: let mut a = ReservoirSampler::<i64>::new(5, 7); let mut b = ReservoirSampler::<i64>::new(5, 7); for v in 1..=50 { a.add(v); b.add(v); } assert_eq!(a.sample(), b.sample()).
+
+Std only. Output ONLY the Rust source code. No markdown fences, no prose.

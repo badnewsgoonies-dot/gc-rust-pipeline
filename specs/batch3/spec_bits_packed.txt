@@ -1,0 +1,18 @@
+Write a complete Rust 2021 source file implementing PackedBits for storing N k-bit values where k is between 1 and 32.
+Required: #[derive(Debug, Clone)] on struct.
+pub struct PackedBits { storage: Vec<u64>, bits_per_value: u32, len: usize }
+
+impl PackedBits, numbered:
+(1) pub fn new(len: usize, bits_per_value: u32) -> Self — assert bits_per_value >= 1 && bits_per_value <= 32 with panic "bits_per_value out of range"; total_bits = len * bits_per_value as usize; words = (total_bits + 63) / 64; storage = vec![0u64; words]; len stored; bits_per_value stored.
+(2) pub fn set(&mut self, idx: usize, value: u32) — assert idx < self.len with panic "set out of range"; let bit_offset = idx * self.bits_per_value as usize; let word_idx = bit_offset / 64; let bit_in_word = bit_offset % 64; let mask = ((1u64 << self.bits_per_value) - 1) << bit_in_word; self.storage[word_idx] = (self.storage[word_idx] & !mask) | ((value as u64) << bit_in_word) & mask.
+(3) pub fn get(&self, idx: usize) -> u32 — assert idx < self.len with panic "get out of range"; let bit_offset = idx * self.bits_per_value as usize; let word_idx = bit_offset / 64; let bit_in_word = bit_offset % 64; let mask = (1u64 << self.bits_per_value) - 1; ((self.storage[word_idx] >> bit_in_word) & mask) as u32.
+(4) pub fn len(&self) -> usize.
+(5) pub fn bits_per_value(&self) -> u32.
+
+NOTE: Assume bits_per_value never exceeds 32 in tests so values never cross word boundaries when bit_in_word + bits_per_value <= 64. The simple implementation above is correct for k up to 32 only for offsets that don't cross.
+
+#[cfg(test)] mod tests with bits_per_value = 4:
+(1) fn set_get_round_trip: let mut p = PackedBits::new(16, 4); for i in 0..16u32 { p.set(i as usize, i); } for i in 0..16u32 { assert_eq!(p.get(i as usize), i); }
+(2) fn overwrite_value: let mut p = PackedBits::new(4, 4); p.set(0, 7); p.set(0, 3); assert_eq!(p.get(0), 3); assert_eq!(p.get(1), 0).
+
+Std only. Output ONLY the Rust source code. No markdown fences, no prose.

@@ -1,0 +1,19 @@
+Write a complete Rust 2021 source file implementing ColorRgb — 24-bit RGB color with mix and clamp.
+Required: #[derive(Debug, Clone, Copy, PartialEq, Eq)] on struct.
+pub struct ColorRgb { pub r: u8, pub g: u8, pub b: u8 }
+
+impl ColorRgb, numbered:
+(1) pub fn new(r: u8, g: u8, b: u8) -> Self.
+(2) pub fn black() -> Self returning ColorRgb::new(0, 0, 0).
+(3) pub fn white() -> Self returning ColorRgb::new(255, 255, 255).
+(4) pub fn mix(&self, other: &ColorRgb, t: f64) -> ColorRgb — let t = t.clamp(0.0, 1.0); let r = (self.r as f64 * (1.0 - t) + other.r as f64 * t).round() as u8; same for g and b; return ColorRgb::new(r, g, b).
+(5) pub fn brightness(&self) -> u32 returning self.r as u32 + self.g as u32 + self.b as u32.
+
+#[cfg(test)] mod tests:
+(1) fn black_brightness: assert_eq!(ColorRgb::black().brightness(), 0).
+(2) fn white_brightness: assert_eq!(ColorRgb::white().brightness(), 765).
+(3) fn mix_zero_returns_self: let a = ColorRgb::new(100, 200, 50); let b = ColorRgb::new(0, 0, 0); assert_eq!(a.mix(&b, 0.0), a).
+(4) fn mix_one_returns_other: let a = ColorRgb::new(100, 200, 50); let b = ColorRgb::new(0, 0, 0); assert_eq!(a.mix(&b, 1.0), b).
+(5) fn mix_half_averages: let a = ColorRgb::new(100, 200, 50); let b = ColorRgb::new(200, 0, 150); assert_eq!(a.mix(&b, 0.5), ColorRgb::new(150, 100, 100)).
+
+Std only. Output ONLY the Rust source code. No markdown fences, no prose.

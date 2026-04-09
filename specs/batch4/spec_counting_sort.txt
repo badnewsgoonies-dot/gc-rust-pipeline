@@ -1,0 +1,13 @@
+Write a complete Rust 2021 source file implementing counting_sort — sort a slice of i64 in a known small range (-1000..=1000) into a new Vec<i64>.
+Required: no struct; just one pub fn.
+
+pub fn counting_sort(input: &[i64]) -> Vec<i64> — if input is empty return Vec::new(); assert all values are in [-1000, 1000] with panic "counting_sort: out of range" if any v < -1000 || v > 1000; let mut counts = vec![0u64; 2001]; for &v in input { counts[(v + 1000) as usize] += 1; }; let mut result = Vec::with_capacity(input.len()); for (i, &c) in counts.iter().enumerate() { for _ in 0..c { result.push(i as i64 - 1000); } }; result.
+
+#[cfg(test)] mod tests:
+(1) fn sort_simple: assert_eq!(counting_sort(&[3, 1, 4, 1, 5, 9, 2, 6, 5, 3]), vec![1, 1, 2, 3, 3, 4, 5, 5, 6, 9]).
+(2) fn sort_negative: assert_eq!(counting_sort(&[-5, 3, -1, 0, 2]), vec![-5, -1, 0, 2, 3]).
+(3) fn sort_empty: assert_eq!(counting_sort(&[]), Vec::<i64>::new()).
+(4) fn sort_one: assert_eq!(counting_sort(&[42]), vec![42]).
+(5) fn sort_already_sorted: assert_eq!(counting_sort(&[1, 2, 3]), vec![1, 2, 3]).
+
+Std only. Output ONLY the Rust source code. No markdown fences, no prose.

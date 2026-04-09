@@ -1,0 +1,20 @@
+Write a complete Rust 2021 source file implementing CounterMap<K: Eq + std::hash::Hash + Clone> — counts occurrences of K.
+Required: #[derive(Debug, Clone)] on struct.
+pub struct CounterMap<K: Eq + std::hash::Hash + Clone> { counts: std::collections::HashMap<K, u64> }
+
+impl<K: Eq + std::hash::Hash + Clone> CounterMap<K>, numbered:
+(1) pub fn new() -> Self — counts is empty HashMap.
+(2) pub fn add(&mut self, key: K) — *self.counts.entry(key).or_insert(0) += 1.
+(3) pub fn add_n(&mut self, key: K, n: u64) — *self.counts.entry(key).or_insert(0) += n.
+(4) pub fn get(&self, key: &K) -> u64 returning *self.counts.get(key).unwrap_or(&0).
+(5) pub fn total(&self) -> u64 returning self.counts.values().sum().
+(6) pub fn unique_keys(&self) -> usize returning self.counts.len().
+
+impl<K: Eq + std::hash::Hash + Clone> Default for CounterMap<K> returning Self::new().
+
+#[cfg(test)] mod tests using CounterMap<String>:
+(1) fn add_increments: let mut c = CounterMap::<String>::new(); c.add("a".to_string()); c.add("a".to_string()); c.add("b".to_string()); assert_eq!(c.get(&"a".to_string()), 2); assert_eq!(c.get(&"b".to_string()), 1); assert_eq!(c.get(&"missing".to_string()), 0).
+(2) fn add_n_bulk: let mut c = CounterMap::<String>::new(); c.add_n("x".to_string(), 5); c.add_n("y".to_string(), 3); assert_eq!(c.total(), 8); assert_eq!(c.unique_keys(), 2).
+(3) fn empty_total: let c = CounterMap::<String>::new(); assert_eq!(c.total(), 0); assert_eq!(c.unique_keys(), 0).
+
+Std only. Output ONLY the Rust source code. No markdown fences, no prose.

@@ -1,0 +1,19 @@
+Write a complete Rust 2021 source file implementing SortedVec<T: Ord + Clone> — Vec maintained in sorted order via binary search insert.
+Required: #[derive(Debug, Clone, PartialEq)] on struct.
+pub struct SortedVec<T: Ord + Clone> { data: Vec<T> }
+
+impl<T: Ord + Clone> SortedVec<T>, numbered:
+(1) pub fn new() -> Self — data empty.
+(2) pub fn insert(&mut self, value: T) — match self.data.binary_search(&value) { Ok(idx) => self.data.insert(idx, value), Err(idx) => self.data.insert(idx, value) } — both arms insert at the binary-search position.
+(3) pub fn contains(&self, value: &T) -> bool returning self.data.binary_search(value).is_ok().
+(4) pub fn as_slice(&self) -> &[T] returning &self.data.
+(5) pub fn len(&self) -> usize returning self.data.len().
+
+impl<T: Ord + Clone> Default for SortedVec<T> returning Self::new().
+
+#[cfg(test)] mod tests using SortedVec<i64>:
+(1) fn insert_maintains_order: let mut sv = SortedVec::<i64>::new(); for v in [5, 1, 4, 2, 3] { sv.insert(v); } assert_eq!(sv.as_slice(), &[1, 2, 3, 4, 5]).
+(2) fn contains_check: let mut sv = SortedVec::<i64>::new(); sv.insert(10); sv.insert(20); sv.insert(30); assert!(sv.contains(&20)); assert!(!sv.contains(&15)).
+(3) fn allows_duplicates: let mut sv = SortedVec::<i64>::new(); sv.insert(5); sv.insert(5); sv.insert(5); assert_eq!(sv.len(), 3); assert_eq!(sv.as_slice(), &[5, 5, 5]).
+
+Std only. Output ONLY the Rust source code. No markdown fences, no prose.

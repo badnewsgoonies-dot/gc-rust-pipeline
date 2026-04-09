@@ -1,0 +1,13 @@
+Write a complete Rust 2021 source file implementing is_anagram — case-insensitive anagram check ignoring whitespace.
+Required: no struct; just one pub fn.
+
+pub fn is_anagram(a: &str, b: &str) -> bool — let mut a_chars: Vec<char> = a.to_lowercase().chars().filter(|c| !c.is_whitespace()).collect(); let mut b_chars: Vec<char> = b.to_lowercase().chars().filter(|c| !c.is_whitespace()).collect(); a_chars.sort(); b_chars.sort(); a_chars == b_chars.
+
+#[cfg(test)] mod tests:
+(1) fn classic: assert!(is_anagram("listen", "silent")).
+(2) fn case_insensitive: assert!(is_anagram("Tea", "Eat")).
+(3) fn ignores_whitespace: assert!(is_anagram("conversation", "voices rant on")).
+(4) fn not_anagram: assert!(!is_anagram("hello", "world")).
+(5) fn empty_strings: assert!(is_anagram("", "")).
+
+Std only. Output ONLY the Rust source code. No markdown fences, no prose.

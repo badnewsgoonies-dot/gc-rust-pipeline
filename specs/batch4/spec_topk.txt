@@ -1,0 +1,16 @@
+Write a complete Rust 2021 source file implementing TopKSmallest<T: Ord + Clone> — keeps the k smallest items seen.
+Required: #[derive(Debug, Clone)] on struct.
+pub struct TopKSmallest<T: Ord + Clone> { items: Vec<T>, k: usize }
+
+impl<T: Ord + Clone> TopKSmallest<T>, numbered:
+(1) pub fn new(k: usize) -> Self — items empty, k stored.
+(2) pub fn add(&mut self, item: T) — if self.items.len() < self.k { self.items.push(item); self.items.sort(); } else if let Some(last) = self.items.last() { if &item < last { self.items.pop(); self.items.push(item); self.items.sort(); } }
+(3) pub fn into_sorted(self) -> Vec<T> returning self.items.
+(4) pub fn len(&self) -> usize returning self.items.len().
+
+#[cfg(test)] mod tests using TopKSmallest<i64>:
+(1) fn keeps_k_smallest: let mut tk = TopKSmallest::<i64>::new(3); for v in [5, 1, 8, 2, 9, 3, 7] { tk.add(v); } assert_eq!(tk.into_sorted(), vec![1, 2, 3]).
+(2) fn fewer_than_k: let mut tk = TopKSmallest::<i64>::new(5); tk.add(2); tk.add(1); tk.add(3); assert_eq!(tk.into_sorted(), vec![1, 2, 3]).
+(3) fn k_one: let mut tk = TopKSmallest::<i64>::new(1); for v in [10, 5, 20, 3, 15] { tk.add(v); } assert_eq!(tk.into_sorted(), vec![3]).
+
+Std only. Output ONLY the Rust source code. No markdown fences, no prose.

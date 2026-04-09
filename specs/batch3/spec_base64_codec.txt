@@ -1,0 +1,14 @@
+Write a complete Rust 2021 source file implementing pure-std base64 encoding only (no padding, decode optional).
+Required: no struct; just one pub fn.
+
+pub fn base64_encode(input: &[u8]) -> String — implement standard base64 encoding using the alphabet "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/". Process input in chunks of 3 bytes producing 4 output chars. For incomplete final chunks: 1 byte → 2 chars + "==", 2 bytes → 3 chars + "=", 3 bytes → 4 chars no padding.
+
+#[cfg(test)] mod tests:
+(1) fn encode_empty: assert_eq!(base64_encode(b""), "");
+(2) fn encode_one_byte: assert_eq!(base64_encode(b"f"), "Zg==").
+(3) fn encode_two_bytes: assert_eq!(base64_encode(b"fo"), "Zm8=").
+(4) fn encode_three_bytes: assert_eq!(base64_encode(b"foo"), "Zm9v").
+(5) fn encode_man: assert_eq!(base64_encode(b"Man"), "TWFu").
+(6) fn encode_hello: assert_eq!(base64_encode(b"Hello"), "SGVsbG8=").
+
+Std only. Output ONLY the Rust source code. No markdown fences, no prose.
