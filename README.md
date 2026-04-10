@@ -115,3 +115,63 @@ The disciplined template is what makes codex reliable. Drop any field and the fa
 
 - **GC-OS briefcase** — the signed append-only chain where compiled intents and findings are stored. This repo is the generation side; briefcase is the verification/evidence side.
 - **Operating kernel** — the Opus-level orchestrator that plans the batch contents and triage any failures after dispatch.
+
+
+## Visual pipeline (added Apr 9 2026)
+
+The same closed-loop architecture, but with **Gemini-3-flash-preview as the verifier instead of cargo test**. Proves the loop generalizes to domains where source-level tests cannot tell you whether the output is correct.
+
+### Components
+
+- **`tools/screenshot.js`** — playwright headless chromium driver, takes 4 shots per HTML (loaded, after_click, running_1s, after_move), captures `pageerror` + `console.error` from the browser, returns JSON manifest
+- **`tools/judge_raycaster.py`** — Gemini vision wrapper with strict 9-field schema (`renders`, `has_perspective`, `has_walls`, `has_hud`, `has_floor_and_ceiling`, `is_playable_fps`, `visible_bugs[]`, `description`, `confidence`). Weighted scoring with bug penalty.
+- **`tools/pipeline_visual.py`** — full closed loop: codex generate → extract HTML → screenshot → judge → iterate with failure feedback baked into the next prompt
+- **`tools/vision/gemini_vertex.py`** — Vertex AI helper (consumer endpoint blocked, enterprise endpoint open), supports text + vision + JSON schema enforcement, OAuth refresh token caching
+
+### Setup
+
+```sh
+# Install playwright + chromium binary (~280 MB)
+npm install playwright
+PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers npx playwright install chromium
+
+# Set env vars for Vertex AI
+export GEMINI_OAUTH_CLIENT_ID=...
+export GEMINI_OAUTH_CLIENT_SECRET=...
+export GEMINI_OAUTH_REFRESH_TOKEN=...
+export GEMINI_VERTEX_PROJECT=...
+```
+
+### Usage
+
+```sh
+python3 tools/pipeline_visual.py specs/visual/raycaster.txt my_raycaster --max-iter 4
+```
+
+Returns JSON with per-iteration timings, judge verdicts, screenshot paths, and final score. Threshold defaults to `0.6`. Exit code `0` on success, `1` on max-iter exceeded.
+
+### Proven first-shot pass
+
+The pipeline generated and judged a working DDA raycaster on the **first iteration** in **87.2 seconds wall-clock** (51.5s codex + 36s screenshot/judge):
+
+| frame | judge verdict | score |
+|---|---|---|
+| `01_loaded.png` (title screen) | menu, not gameplay | 0.0 |
+| `02_after_click.png` (FPS=0, just started) | working but counter not yet ticked | 0.81 |
+| `03_running_1s.png` (gameplay) | "gray walls, brown floor and ceiling, central crosshair, FPS counter" | **1.0** |
+| `04_after_move.png` (walked into wall) | partial render | 0.0 |
+
+Pipeline took the best frame and reported `status: ok, final_score: 1.0`. The full HTML body is at `examples/raycast_v1.html` and a screenshot is at `examples/screenshots/raycast_v1_running.png`.
+
+### What the visual judge catches that `cargo test` cannot
+
+- **"FPS counter shows 0"** — game loop ran but never advanced. Only visible at runtime.
+- **"Scene is solid grey"** — renderer produced output but no contrast. Only visible after pixel inspection.
+- **"Large vertical grey block on the right lacks depth cues"** — perspective math defect. Only visible to a vision model.
+- **"No environment rendered, only crosshair and FPS counter"** — partial rendering failure. Only visible against a known-good reference.
+
+### Architectural claim, now empirically validated
+
+**The same closed loop generalizes from `cargo test` to `gemini vision` by swapping ONLY the verifier.** Same codex generator, same iteration logic, same failure-feedback shape, same `intent_store` chain primitive. The pipeline shape doesn't care whether the oracle is rustc or a vision model. What changes is what counts as "correct" — and that's the part of game/UI dev that source-level checks couldn't help with.
+
+Two verifier shapes proven in this repo: `cargo_check_tests` for algorithmic Rust, `gemini_vision_json` for rendered visual content.

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Raycast</title>
+<style>
+html,body{margin:0;height:100%;background:#111;font-family:system-ui,sans-serif;overflow:hidden}
+#wrap{position:relative;width:800px;height:500px;margin:20px auto;box-shadow:0 0 24px rgba(0,0,0,.45)}
+canvas{display:block;background:#000}
+#overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.45);color:#fff}
+.panel{text-align:center;padding:28px 36px;background:rgba(20,20,20,.78);border:1px solid rgba(255,255,255,.15);backdrop-filter:blur(2px)}
+h1{margin:0 0 14px;font-size:42px;letter-spacing:.2em}
+button{padding:12px 26px;font-size:18px;border:0;background:#f0f0f0;color:#111;cursor:pointer}
+button:hover{background:#fff}
+</style>
+</head>
+<body>
+<div id="wrap">
+<canvas id="game" width="800" height="500"></canvas>
+<div id="overlay"><div class="panel"><h1>RAYCAST</h1><button id="startBtn">START</button></div></div>
+</div>
+<script>
+(() => {
+const canvas = document.getElementById('game');
+const ctx = canvas.getContext('2d');
+const overlay = document.getElementById('overlay');
+const startBtn = document.getElementById('startBtn');
+const W = canvas.width, H = canvas.height, HALF = H / 2;
+const map = [
+[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+[1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+[1,0,0,1,1,1,1,0,0,0,0,1,0,0,0,1],
+[1,0,0,0,0,0,1,0,1,1,0,1,0,1,0,1],
+[1,0,1,1,1,0,1,0,0,1,0,1,0,1,0,1],
+[1,0,1,0,0,0,0,0,0,1,0,0,0,1,0,1],
+[1,0,1,0,1,1,1,1,0,1,1,1,0,1,0,1],
+[1,0,0,0,1,0,0,1,0,0,0,1,0,0,0,1],
+[1,1,1,0,1,0,0,1,1,1,0,1,1,1,0,1],
+[1,0,0,0,1,0,0,0,0,1,0,0,0,1,0,1],
+[1,0,1,1,1,0,1,1,0,1,1,1,0,1,0,1],
+[1,0,0,0,0,0,1,0,0,0,0,1,0,0,0,1],
+[1,0,1,1,1,0,1,0,1,1,0,1,1,1,0,1],
+[1,0,0,0,1,0,0,0,0,1,0,0,0,0,0,1],
+[1,0,0,0,0,0,1,1,0,0,0,1,1,0,0,1],
+[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+];
+const keys = Object.create(null);
+const player = { x: 2.5, y: 2.5, a: 0, fov: Math.PI / 3 };
+let running = false, last = 0, fps = 0, frames = 0, fpsTimer = 0;
+
+function isWall(x, y) {
+  const mx = x | 0, my = y | 0;
+  return !map[my] || map[my][mx] === undefined || map[my][mx] !== 0;
+}
+
+function move(dt) {
+  const speed = 3 * dt, rotSpeed = 2.2 * dt;
+  if (document.pointerLockElement !== canvas) {
+    if (keys.ArrowLeft) player.a -= rotSpeed;
+    if (keys.ArrowRight) player.a += rotSpeed;
+  }
+  let dx = 0, dy = 0;
+  const ca = Math.cos(player.a), sa = Math.sin(player.a);
+  if (keys.KeyW) { dx += ca * speed; dy += sa * speed; }
+  if (keys.KeyS) { dx -= ca * speed; dy -= sa * speed; }
+  if (keys.KeyA) { dx += Math.cos(player.a - Math.PI / 2) * speed; dy += Math.sin(player.a - Math.PI / 2) * speed; }
+  if (keys.KeyD) { dx += Math.cos(player.a + Math.PI / 2) * speed; dy += Math.sin(player.a + Math.PI / 2) * speed; }
+  const nx = player.x + dx, ny = player.y + dy, r = 0.18;
+  if (!isWall(nx + Math.sign(dx || 1) * r, player.y) && !isWall(nx, player.y)) player.x = nx;
+  if (!isWall(player.x, ny + Math.sign(dy || 1) * r) && !isWall(player.x, ny)) player.y = ny;
+}
+
+function render() {
+  ctx.fillStyle = '#2d2418';
+  ctx.fillRect(0, 0, W, HALF);
+  ctx.fillStyle = '#6b4d2b';
+  ctx.fillRect(0, HALF, W, HALF);
+
+  for (let x = 0; x < W; x++) {
+    const camX = 2 * x / W - 1;
+    const rayAngle = player.a + camX * (player.fov / 2);
+    const rayDirX = Math.cos(rayAngle), rayDirY = Math.sin(rayAngle);
+    let mapX = player.x | 0, mapY = player.y | 0;
+    const deltaDistX = rayDirX === 0 ? 1e30 : Math.abs(1 / rayDirX);
+    const deltaDistY = rayDirY === 0 ? 1e30 : Math.abs(1 / rayDirY);
+    let stepX, stepY, sideDistX, sideDistY;
+
+    if (rayDirX < 0) { stepX = -1; sideDistX = (player.x - mapX) * deltaDistX; }
+    else { stepX = 1; sideDistX = (mapX + 1 - player.x) * deltaDistX; }
+    if (rayDirY < 0) { stepY = -1; sideDistY = (player.y - mapY) * deltaDistY; }
+    else { stepY = 1; sideDistY = (mapY + 1 - player.y) * deltaDistY; }
+
+    let hit = 0, side = 0;
+    while (!hit) {
+      if (sideDistX < sideDistY) { sideDistX += deltaDistX; mapX += stepX; side = 0; }
+      else { sideDistY += deltaDistY; mapY += stepY; side = 1; }
+      if (map[mapY][mapX] > 0) hit = 1;
+    }
+
+    let dist = side === 0 ? sideDistX - deltaDistX : sideDistY - deltaDistY;
+    dist *= Math.cos(rayAngle - player.a);
+    const lineH = Math.min(H, (H / Math.max(dist, 0.0001)) | 0);
+    const drawStart = ((H - lineH) / 2) | 0;
+    ctx.fillStyle = side === 1 ? '#5a5a5a' : '#8a8a8a';
+    ctx.fillRect(x, drawStart, 1, lineH);
+  }
+
+  ctx.strokeStyle = '#fff';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(W / 2 - 6, H / 2); ctx.lineTo(W / 2 + 6, H / 2);
+  ctx.moveTo(W / 2, H / 2 - 6); ctx.lineTo(W / 2, H / 2 + 6);
+  ctx.stroke();
+
+  ctx.fillStyle = '#fff';
+  ctx.font = '16px monospace';
+  const text = 'FPS: ' + fps;
+  ctx.fillText(text, W - ctx.measureText(text).width - 10, 20);
+}
+
+function loop(ts) {
+  if (!running) return;
+  if (!last) last = ts;
+  const dt = Math.min((ts - last) / 1000, 0.05);
+  last = ts;
+  move(dt);
+  render();
+  frames++;
+  fpsTimer += dt;
+  if (fpsTimer >= 1) {
+    fps = frames;
+    frames = 0;
+    fpsTimer = 0;
+  }
+  requestAnimationFrame(loop);
+}
+
+window.addEventListener('keydown', e => { keys[e.code] = true; if (['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code)) e.preventDefault(); });
+window.addEventListener('keyup', e => { keys[e.code] = false; });
+canvas.addEventListener('click', () => { if (running) canvas.requestPointerLock(); });
+document.addEventListener('mousemove', e => {
+  if (running && document.pointerLockElement === canvas) player.a += e.movementX * 0.0025;
+});
+
+startBtn.addEventListener('click', () => {
+  overlay.style.display = 'none';
+  if (!running) {
+    running = true;
+    canvas.requestPointerLock();
+    requestAnimationFrame(loop);
+  }
+});
+
+render();
+})();
+</script>
+</body>
+</html>

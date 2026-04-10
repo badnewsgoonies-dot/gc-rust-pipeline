@@ -1,0 +1,16 @@
+Write a single-file HTML page implementing a first-person raycaster (Wolfenstein-style) that runs in any modern browser. Output ONLY the HTML source — no markdown fences, no prose, no commentary.
+
+REQUIREMENTS:
+- 800x500 canvas, column-by-column DDA raycaster
+- 16x16 tile map with hand-picked walls (1=wall, 0=empty), bordered by walls, with at least 3 internal wall segments forming corridors
+- WASD movement (W/S forward/back, A/D strafe)
+- Mouse look: requestPointerLock on the canvas when clicked, then mouse X delta rotates the player angle
+- Walls drawn as solid colors based on orientation: north/south walls one shade (e.g. dark gray), east/west walls another (e.g. lighter gray) for a fake-shading 3D effect
+- Floor and ceiling: fill the lower half of the canvas with a brown tone, the upper half with a darker tone, before drawing walls
+- A small white crosshair "+" in the exact center of the canvas
+- "FPS: N" text in the top-right corner (use a simple frame counter)
+- A title overlay div with "RAYCAST" heading and a "START" button. Clicking the button hides the overlay and starts the game loop. The canvas must already be visible behind the overlay, but the game loop only runs after START is clicked.
+- All JS inline in a single <script> block, no imports, no CDN, no external assets
+- Must be under 350 lines total
+
+The page should render correctly when opened directly as a file:// URL.
